@@ -43,7 +43,8 @@ function build_cpython () {
             --enable-optimizations \
             --with-lto \
             --enable-loadable-sqlite-extensions \
-            --enable-ipv6
+            --enable-ipv6 \
+            --enable-shared
     else
         ./configure --prefix="${1}" \
             --exec_prefix="${1}" \
@@ -52,6 +53,7 @@ function build_cpython () {
             --with-lto \
             --enable-loadable-sqlite-extensions \
             --enable-ipv6 \
+            --enable-shared \
             --with-threads
     fi
     printf "\n### make -j%s\n" "${NPROC}"
