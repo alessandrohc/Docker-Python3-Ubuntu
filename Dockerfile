@@ -38,6 +38,17 @@ RUN apt-get -qq -y update && \
         bash-completion \
         tree \
         vim \
+        llvm \
+        xz-utils \
+        libxml2 \
+        unixodbc-dev \
+        apache2-dev \
+        libxrender-dev  \
+        default-libmysqlclient-dev \
+        libsm6 \
+        libxext6 \
+        zlib1g-dev \
+        libxmlsec1-dev \
         software-properties-common && \
     mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
     apt-get -y autoclean && \
