@@ -7,8 +7,8 @@ WORKDIR /root
 
 SHELL [ "/bin/bash", "-c" ]
 
-ARG PYTHON_VERSION_TAG=3.8.3
-ARG LINK_PYTHON_TO_PYTHON3=1
+ARG PYTHON_VERSION_TAG=3.7.9
+ARG LINK_PYTHON_TO_PYTHON3=0
 
 # Existing lsb_release causes issues with modern installations of Python3
 # https://github.com/pypa/pip/issues/4924#issuecomment-435825490
