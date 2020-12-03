@@ -49,6 +49,7 @@ RUN apt-get -qq -y update && \
         zlib1g-dev \
         libxmlsec1-dev \
         software-properties-common && \
+    mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
     apt-get -y autoclean && \
     apt-get -y autoremove && \
     rm -rf /var/lib/apt-get/lists/*
