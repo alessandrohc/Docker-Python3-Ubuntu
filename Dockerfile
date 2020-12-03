@@ -41,6 +41,7 @@ RUN apt-get -qq -y update && \
         llvm \
         xz-utils \
         libxml2 \
+        unixodbc-dev \
         apache2-dev \
         libxrender-dev  \
         default-libmysqlclient-dev \
