@@ -49,6 +49,7 @@ RUN apt-get -qq -y update && \
         libxext6 \
         zlib1g-dev \
         libxmlsec1-dev \
+        libmediainfo-dev \
         software-properties-common && \
     mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
     apt-get -y autoclean && \
