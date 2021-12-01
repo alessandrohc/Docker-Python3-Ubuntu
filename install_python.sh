@@ -35,27 +35,15 @@ function build_cpython () {
     printf "\n### ./configure --help\n"
     ./configure --help
     printf "\n### ./configure\n"
-    if [[ "${2}" > "3.7.0"  ]]; then
-        # --with-threads is removed in Python 3.7 (threading already on)
-        ./configure --prefix="${1}" \
-            --exec_prefix="${1}" \
-            --with-ensurepip \
-            --enable-optimizations \
-            --with-lto \
-            --enable-loadable-sqlite-extensions \
-            --enable-ipv6 \
-            --enable-shared
-    else
-        ./configure --prefix="${1}" \
-            --exec_prefix="${1}" \
-            --with-ensurepip \
-            --enable-optimizations \
-            --with-lto \
-            --enable-loadable-sqlite-extensions \
-            --enable-ipv6 \
-            --enable-shared \
-            --with-threads
-    fi
+    ./configure --prefix="${1}" \
+        --exec_prefix="${1}" \
+        --with-ensurepip \
+        --enable-optimizations \
+        --with-lto \
+        --enable-loadable-sqlite-extensions \
+        --enable-ipv6 \
+        --enable-shared
+    
     printf "\n### make -j%s\n" "${NPROC}"
     make -j"${NPROC}"
     printf "\n### make -j%s test\n" "${NPROC}"
@@ -103,7 +91,7 @@ function main() {
     # 1: the Python version tag
     # 2: bool of if should symlink python and pip to python3 versions
 
-    PYTHON_VERSION_TAG=3.8.1
+    PYTHON_VERSION_TAG=3.9.9
     LINK_PYTHON_TO_PYTHON3=0 # By default don't link so as to reserve python for Python 2
     if [[ $# -gt 0 ]]; then
         PYTHON_VERSION_TAG="${1}"
