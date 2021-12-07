@@ -40,6 +40,14 @@ RUN apt-get -qq -y update && \
         tree \
         vim \
         llvm \
+        pkg-config \
+        libavformat-dev \
+        libavcodec-dev \
+        libavdevice-dev \
+        libavutil-dev \
+        libswscale-dev \
+        libswresample-dev \
+        libavfilter-dev \
         xz-utils \
         libxml2 \
         unixodbc-dev \
