@@ -59,6 +59,8 @@ RUN apt-get -qq -y update && \
         zlib1g-dev \
         libxmlsec1-dev \
         libmediainfo-dev \
+        unzip \
+        libcairo2-dev \
         software-properties-common && \
     mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
     apt-get -y autoclean && \
