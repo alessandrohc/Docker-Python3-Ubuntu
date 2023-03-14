@@ -13,7 +13,7 @@ ARG LINK_PYTHON_TO_PYTHON3=0
 # Existing lsb_release causes issues with modern installations of Python3
 # https://github.com/pypa/pip/issues/4924#issuecomment-435825490
 # Set (temporarily) DEBIAN_FRONTEND to avoid interacting with tzdata
-RUN apt-get -qq -y update && \
+RUN apt-get -qq -y update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
         gcc \
         g++ \
@@ -38,31 +38,35 @@ RUN apt-get -qq -y update && \
         sudo \
         bash-completion \
         tree \
-        vim \
-        llvm \
-        pkg-config \
-        libavformat-dev \
-        libavcodec-dev \
-        libavdevice-dev \
-        libavutil-dev \
-        libswscale-dev \
-        libswresample-dev \
-        libavfilter-dev \
-        xz-utils \
-        libxml2 \
-        unixodbc-dev \
-        apache2-dev \
-        libxrender-dev  \
-        default-libmysqlclient-dev \
-        libsm6 \
-        libxext6 \
-        zlib1g-dev \
-        libxmlsec1-dev \
-        libmediainfo-dev \
-        unzip \
-        libcairo2-dev \
-        chromium-browser \
-        software-properties-common && \
+        vim
+
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
+    llvm \
+    pkg-config \
+    libavformat-dev \
+    libavcodec-dev \
+    libavdevice-dev \
+    libavutil-dev \
+    libswscale-dev \
+    libswresample-dev \
+    libavfilter-dev \
+    xz-utils \
+    libxml2 \
+    unixodbc-dev \
+    apache2 \
+    apache2-dev \
+    libxrender-dev  \
+    default-libmysqlclient-dev \
+    libsm6 \
+    libxext6 \
+    zlib1g-dev \
+    libxmlsec1-dev \
+    libmediainfo-dev \
+    unzip \
+    libcairo2-dev \
+    chromium-browser \
+    software-properties-common && \
     mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
     apt-get -y autoclean && \
     apt-get -y autoremove && \
