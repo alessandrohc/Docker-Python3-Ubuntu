@@ -54,10 +54,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
     xz-utils \
     libxml2 \
     unixodbc-dev \
-    apache2 \
-    apache2-dev \
     libxrender-dev  \
     default-libmysqlclient-dev \
+    mysql-client \
     libsm6 \
     libxext6 \
     zlib1g-dev \
