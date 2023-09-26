@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:jammy
 
 MAINTAINER Matthew Feickert <matthewfeickert@users.noreply.github.com>
 
@@ -7,7 +7,7 @@ WORKDIR /root
 
 SHELL [ "/bin/bash", "-c" ]
 
-ARG PYTHON_VERSION_TAG=3.9.16
+ARG PYTHON_VERSION_TAG=3.9.18
 ARG LINK_PYTHON_TO_PYTHON3=0
 
 # Existing lsb_release causes issues with modern installations of Python3
@@ -17,7 +17,6 @@ RUN apt-get -qq -y update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
         gcc \
         g++ \
-        zlibc \
         zlib1g-dev \
         libssl-dev \
         libbz2-dev \
@@ -27,7 +26,7 @@ RUN apt-get -qq -y update --fix-missing && \
         libc6-dev \
         libgdbm-compat-dev \
         liblzma-dev \
-        libreadline-gplv2-dev  \
+        libreadline-dev  \
         uuid-dev \
         libffi-dev \
         tk-dev \
@@ -38,38 +37,35 @@ RUN apt-get -qq -y update --fix-missing && \
         sudo \
         bash-completion \
         tree \
-        vim
-
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
-    llvm \
-    pkg-config \
-    libavformat-dev \
-    libavcodec-dev \
-    libavdevice-dev \
-    libavutil-dev \
-    libswscale-dev \
-    libswresample-dev \
-    libavfilter-dev \
-    xz-utils \
-    libxml2 \
-    unixodbc-dev \
-    libxrender-dev  \
-    default-libmysqlclient-dev \
-    mysql-client \
-    libsm6 \
-    libxext6 \
-    zlib1g-dev \
-    libxmlsec1-dev \
-    libmediainfo-dev \
-    unzip \
-    libcairo2-dev \
-    chromium-browser \
-    software-properties-common && \
-    mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
-    apt-get -y autoclean && \
-    apt-get -y autoremove && \
-    rm -rf /var/lib/apt-get/lists/*
+        vim \
+        llvm \
+        pkg-config \
+        libavformat-dev \
+        libavcodec-dev \
+        libavdevice-dev \
+        libavutil-dev \
+        libswscale-dev \
+        libswresample-dev \
+        libavfilter-dev \
+        xz-utils \
+        libxml2 \
+        unixodbc-dev \
+        libxrender-dev  \
+        default-libmysqlclient-dev \
+        mysql-client \
+        libsm6 \
+        libxext6 \
+        zlib1g-dev \
+        libxmlsec1-dev \
+        libmediainfo-dev \
+        unzip \
+        libcairo2-dev \
+        chromium-browser \
+        software-properties-common && \
+        mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
+        apt-get -y autoclean && \
+        apt-get -y autoremove && \
+        rm -rf /var/lib/apt-get/lists/*
 
 COPY install_python.sh install_python.sh
 RUN bash install_python.sh ${PYTHON_VERSION_TAG} ${LINK_PYTHON_TO_PYTHON3} && \
