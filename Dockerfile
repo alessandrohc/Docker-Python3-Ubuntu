@@ -15,52 +15,37 @@ ARG LINK_PYTHON_TO_PYTHON3=0
 # Set (temporarily) DEBIAN_FRONTEND to avoid interacting with tzdata
 RUN apt-get -qq -y update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get -qq -y install \
-        gcc \
-        g++ \
-        zlib1g-dev \
+        build-essential \ 
+        gdb \ 
+        lcov \ 
+        pkg-config \ 
+        libbz2-dev \ 
+        libffi-dev \ 
+        libgdbm-dev \ 
+        libgdbm-compat-dev \ 
+        liblzma-dev \ 
+        libncurses5-dev \ 
+        libreadline6-dev \ 
+        libsqlite3-dev \ 
         libssl-dev \
-        libbz2-dev \
-        libsqlite3-dev \
-        libncursesw5-dev \
-        libgdbm-dev \
-        libc6-dev \
-        libgdbm-compat-dev \
-        liblzma-dev \
-        libreadline-dev  \
-        uuid-dev \
-        libffi-dev \
-        tk-dev \
+        lzma \ 
+        lzma-dev \ 
+        tk-dev \ 
+        uuid-dev \ 
+        zlib1g-dev \ 
+        unzip \
+        libcairo2-dev \
+        chromium-browser \
         wget \
         curl \
         git \
-        make \
         sudo \
         bash-completion \
         tree \
         vim \
-        llvm \
-        pkg-config \
-        libavformat-dev \
-        libavcodec-dev \
-        libavdevice-dev \
-        libavutil-dev \
-        libswscale-dev \
-        libswresample-dev \
-        libavfilter-dev \
-        xz-utils \
-        libxml2 \
-        unixodbc-dev \
-        libxrender-dev  \
         default-libmysqlclient-dev \
         mysql-client \
-        libsm6 \
-        libxext6 \
-        zlib1g-dev \
-        libxmlsec1-dev \
-        libmediainfo-dev \
-        unzip \
-        libcairo2-dev \
-        chromium-browser \
+        libmagic1 \
         software-properties-common && \
         mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
         apt-get -y autoclean && \
