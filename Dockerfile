@@ -7,7 +7,7 @@ WORKDIR /root
 
 SHELL [ "/bin/bash", "-c" ]
 
-ARG PYTHON_VERSION_TAG=3.9.18
+ARG PYTHON_VERSION_TAG=3.10.13
 ARG LINK_PYTHON_TO_PYTHON3=0
 
 # Existing lsb_release causes issues with modern installations of Python3
@@ -46,6 +46,7 @@ RUN apt-get -qq -y update --fix-missing && \
         default-libmysqlclient-dev \
         mysql-client \
         libmagic1 \
+        libmediainfo-dev \
         software-properties-common && \
         mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
         apt-get -y autoclean && \
