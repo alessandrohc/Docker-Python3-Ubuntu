@@ -47,6 +47,9 @@ RUN apt-get -qq -y update --fix-missing && \
         mysql-client \
         libmagic1 \
         libmediainfo-dev \
+        jpegoptim \
+        optipng \
+        gettext \
         software-properties-common && \
         mv /usr/bin/lsb_release /usr/bin/lsb_release.bak && \
         apt-get -y autoclean && \
