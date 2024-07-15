@@ -1,13 +1,13 @@
-FROM ubuntu:jammy
+FROM ubuntu:noble
 
-MAINTAINER Matthew Feickert <matthewfeickert@users.noreply.github.com>
+MAINTAINER Alessandro Hecht <alessandro@fabricadigital.com.br>
 
 USER root
 WORKDIR /root
 
 SHELL [ "/bin/bash", "-c" ]
 
-ARG PYTHON_VERSION_TAG=3.10.13
+ARG PYTHON_VERSION_TAG=3.10.14
 ARG LINK_PYTHON_TO_PYTHON3=0
 
 # Existing lsb_release causes issues with modern installations of Python3
@@ -43,6 +43,7 @@ RUN apt-get -qq -y update --fix-missing && \
         bash-completion \
         tree \
         vim \
+        gdal-bin \
         default-libmysqlclient-dev \
         mysql-client \
         libmagic1 \
