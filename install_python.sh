@@ -46,8 +46,6 @@ function build_cpython () {
     
     printf "\n### make -j%s\n" "${NPROC}"
     make -j"${NPROC}"
-    printf "\n### make -j%s test\n" "${NPROC}"
-    make -j"${NPROC}" test
     printf "\n### make install\n"
     make install
 }

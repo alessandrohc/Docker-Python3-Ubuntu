@@ -9,10 +9,11 @@ SHELL [ "/bin/bash", "-c" ]
 
 ARG PYTHON_VERSION_TAG=3.10.15
 ARG LINK_PYTHON_TO_PYTHON3=0
+ARG TARGETPLATFORM
 
 # Instalação de pacotes essenciais e dependências, remoção de pacotes desnecessários e arquivos de cache
 RUN set -ex \
-    && apt-get -qq -y update --fix-missing \
+    && apt-get -qq -y update --fix-missing  \
     && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends \
         build-essential \
         gdb \
@@ -51,15 +52,39 @@ RUN set -ex \
         optipng \
         gettext \
         software-properties-common \
-        qemu-user-static \
-        binfmt-support \
     && mv /usr/bin/lsb_release /usr/bin/lsb_release.bak \
     && apt-get -y autoclean \
     && apt-get -y autoremove \
     && rm -rf /var/lib/apt/lists/*
 
-# Configuração do binfmt_misc para suportar execução de binários x86-64
-RUN update-binfmts --enable qemu-x86_64
+# linux/arm64 - Adiciona arquitetura amd64, configura fontes e instala pacotes
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+      dpkg --add-architecture amd64 && \
+      printf "Types: deb\n\
+URIs: http://archive.ubuntu.com/ubuntu/\n\
+Suites: noble noble-updates noble-backports\n\
+Components: main universe restricted multiverse\n\
+Architectures: amd64\n\
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n\n\
+## Ubuntu security updates. Aside from URIs and Suites,\n\
+## this should mirror your choices in the previous section.\n\
+Types: deb\n\
+URIs: http://archive.ubuntu.com/ubuntu/\n\
+Suites: noble-security\n\
+Components: main universe restricted multiverse\n\
+Architectures: amd64\n\
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n" \
+      > /etc/apt/sources.list.d/ubuntu_amd64.sources && \
+      apt-get -qq -y update --fix-missing || true && \
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libc6:amd64 \
+            libstdc++6:amd64 \
+            zlib1g:amd64 \
+            libglib2.0-0:amd64 \
+            libnss3:amd64 \
+            libx11-6:amd64 && \
+      rm -rf /var/lib/apt/lists/*; \
+    fi
 
 # Instalação do Python usando script customizado
 COPY install_python.sh install_python.sh
@@ -88,7 +113,7 @@ WORKDIR /home/docker/data
 ENV HOME=/home/docker
 ENV USER=docker
 USER docker
-ENV PATH /home/docker/.local/bin:$PATH
+ENV PATH=/home/docker/.local/bin:$PATH
 
 # Evita o aviso de primeiro uso do sudo
 RUN touch $HOME/.sudo_as_admin_successful
