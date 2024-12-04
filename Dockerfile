@@ -7,7 +7,7 @@ WORKDIR /root
 
 SHELL [ "/bin/bash", "-c" ]
 
-ARG PYTHON_VERSION_TAG=3.10.15
+ARG PYTHON_VERSION_TAG=3.10.16
 ARG LINK_PYTHON_TO_PYTHON3=0
 ARG TARGETPLATFORM
 
@@ -18,6 +18,7 @@ RUN set -ex \
         build-essential \
         gdb \
         lcov \
+        yasm \
         pkg-config \
         libbz2-dev \
         libffi-dev \
@@ -52,6 +53,7 @@ RUN set -ex \
         optipng \
         gettext \
         software-properties-common \
+        ffmpeg \
     && mv /usr/bin/lsb_release /usr/bin/lsb_release.bak \
     && apt-get -y autoclean \
     && apt-get -y autoremove \
