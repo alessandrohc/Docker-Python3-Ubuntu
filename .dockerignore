@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentacao e metadata do repositorio
+README.md
+LICENSE
+*.md
+
+# Editores / IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+
+# Logs e artefatos
+*.log
+*.tmp
+Python-*.tgz
+Python-*/
