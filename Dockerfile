@@ -1,8 +1,15 @@
-FROM ubuntu:26.04
+# Base fixada por DIGEST (#6656). `ubuntu:26.04` é tag móvel: sem o digest, dois
+# builds em datas diferentes produzem interpretadores compilados contra libs
+# diferentes, sem que uma linha mude. Atualizar é manual. Para subir:
+#   docker pull ubuntu:26.04 \
+#     && docker image inspect ubuntu:26.04 --format '{{index .RepoDigests 0}}'
+FROM ubuntu:26.04@sha256:513c074113a871b51a8d16ab445c88779d6452d937a164fb5cc479f32668a41d
 
 LABEL maintainer="Alessandro Hecht <alessandro@fabricadigital.com.br>"
 
-ARG PYTHON_VERSION_TAG=3.10.20
+# Última da série 3.10 (publicada em 12/08/2026). A série é requisito do produto;
+# só o patch sobe.
+ARG PYTHON_VERSION_TAG=3.10.21
 ARG LINK_PYTHON_TO_PYTHON3=0
 ARG TARGETPLATFORM
 
@@ -46,6 +53,12 @@ RUN set -ex \
         default-libmysqlclient-dev \
         mysql-client \
         libmagic1 \
+        # /etc/mime.types (#7463). Entrava por transitividade e o produto passou a
+        # depender dele: o elFinder deriva as extensões aceitas de
+        # mimetypes.guess_all_extensions(), que lê este arquivo. Sem o pacote, 43
+        # extensões somem (.docx, .xlsx, .webp, .odt...) e a falha é MUDA — o
+        # usuário só não consegue renomear, sem erro nenhum no log.
+        media-types \
         libmediainfo-dev \
         jpegoptim \
         optipng \
@@ -71,7 +84,16 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # linux/arm64 - Adiciona arquitetura amd64, configura fontes e instala pacotes
+#
+# O `sed` é obrigatório e não é cosmético: a base arm64 traz ubuntu.sources
+# apontando para ports.ubuntu.com SEM declarar `Architectures`. Depois do
+# `dpkg --add-architecture amd64`, o apt passa a pedir índices amd64 para TODAS
+# as fontes, inclusive a de ports — que só serve arquiteturas não-x86 e devolve
+# 404, derrubando o build inteiro com exit 100. Declarar `arm64` naquela fonte
+# faz cada arquitetura ser buscada onde ela existe.
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+      sed -i 's|^URIs: http://ports.ubuntu.com/ubuntu-ports/|&\nArchitectures: arm64|' \
+          /etc/apt/sources.list.d/ubuntu.sources && \
       dpkg --add-architecture amd64 && \
       printf "Types: deb\n\
 URIs: http://archive.ubuntu.com/ubuntu/\n\

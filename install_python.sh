@@ -8,7 +8,31 @@ function download_cpython () {
     # 1: the version tag
     printf "\n### Downloading CPython source as Python-%s.tgz\n" "${1}"
     wget "https://www.python.org/ftp/python/${1}/Python-${1}.tgz" &> /dev/null
-    tar -xvzf "Python-${1}.tgz" > /dev/null
+
+    # A extração usa o tarfile do Python, e NÃO o `tar`, por causa de um bug de
+    # emulação: em amd64 sob Rosetta (Docker Desktop no Apple Silicon) o GNU tar
+    # 1.35 não cria diretórios aninhados e falha com "Cannot mkdir / Cannot open:
+    # Function not implemented" em milhares de arquivos.
+    #   https://github.com/orbstack/orbstack/issues/2588
+    # O mesmo tar em arm64 funciona, e o tarfile funciona nas duas. Sem isto, o
+    # build multi-arch termina COM SUCESSO e publica uma imagem amd64 sem o
+    # interpretador compilado — foi exatamente o que aconteceu na v8.
+    # Não é bug do Docker por builder: a opção Rosetta é global do Docker Desktop,
+    # e o builder `qemu` falha igual.
+    if command -v python3 > /dev/null; then
+        printf "### Extraindo com tarfile (contorna o bug do tar sob Rosetta)\n"
+        python3 - "Python-${1}.tgz" <<'EXTRACT'
+import sys, tarfile
+with tarfile.open(sys.argv[1]) as arquivo:
+    try:
+        arquivo.extractall(".", filter="data")   # filter existe a partir do 3.12
+    except TypeError:
+        arquivo.extractall(".")
+EXTRACT
+    else
+        printf "### python3 ausente; extraindo com tar (quebra em amd64 sob Rosetta)\n"
+        tar -xzf "Python-${1}.tgz"
+    fi
     rm "Python-${1}.tgz"
 }
 
@@ -89,7 +113,10 @@ function main() {
     # 1: the Python version tag
     # 2: bool of if should symlink python and pip to python3 versions
 
-    PYTHON_VERSION_TAG=3.10.13
+    # Fallback só para invocação manual sem argumento. A fonte da verdade é o ARG
+    # PYTHON_VERSION_TAG do Dockerfile, que sempre passa a versão — este valor
+    # tinha ficado em 3.10.13 e envelheceu em silêncio por isso.
+    PYTHON_VERSION_TAG=3.10.21
     LINK_PYTHON_TO_PYTHON3=0 # By default don't link so as to reserve python for Python 2
     if [[ $# -gt 0 ]]; then
         PYTHON_VERSION_TAG="${1}"
@@ -108,6 +135,41 @@ function main() {
     if [[ "${LINK_PYTHON_TO_PYTHON3}" -eq 1 ]]; then
         symlink_python_to_python3
     fi
+
+    verify_install "${PYTHON_VERSION_TAG}"
 }
 
-main "$@" || exit 1
+# Prova de que o interpretador pedido existe de verdade, em vez de confiar no
+# encadeamento de comandos. Existe porque este script JÁ reportou sucesso com
+# tudo falhando: o `tar` morreu sob emulação, o ./configure não existia, o make
+# não tinha alvo, o pip3 não existia -- e o build seguiu, publicando uma imagem
+# com o Python do sistema no lugar do compilado.
+#
+# Duas causas se somaram, e as duas estão corrigidas aqui:
+#   1. `main "$@" || exit 1` DESLIGA o `set -e` dentro do main: num comando à
+#      esquerda de `||`, o bash suprime o errexit, então nenhuma falha abortava.
+#   2. Com LINK_PYTHON_TO_PYTHON3=0 (o default), a última instrução do main era
+#      um `if` que não entra -- e um `if` com condição falsa retorna 0. O main
+#      devolvia sucesso mesmo depois de tudo quebrar.
+function verify_install () {
+    local expected="${1}"
+    local binary="/usr/bin/python${expected%.*}"
+
+    if [[ ! -x "${binary}" ]]; then
+        printf "\n### ERRO: %s nao existe -- a compilacao nao produziu o interpretador\n" "${binary}" >&2
+        return 1
+    fi
+
+    local found
+    found="$("${binary}" --version 2>&1 | awk '{print $2}')"
+    if [[ "${found}" != "${expected}" ]]; then
+        printf "\n### ERRO: esperado Python %s, encontrado %s em %s\n" \
+            "${expected}" "${found}" "${binary}" >&2
+        return 1
+    fi
+
+    printf "\n### OK: Python %s instalado em %s\n" "${found}" "${binary}"
+}
+
+# Sem `|| exit 1`: ele é justamente o que suprimia o errexit dentro do main.
+main "$@"
